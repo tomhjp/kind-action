@@ -188,7 +188,9 @@ install_kind() {
 
     mkdir -p "$kind_dir"
 
-    curl -sSLo "$kind_dir/kind" "https://github.com/kubernetes-sigs/kind/releases/download/$version/kind-linux-$arch"
+    curl -sSLo "$kind_dir/#1" "https://github.com/kubernetes-sigs/kind/releases/download/$version/{kind-linux-$arch,kind-linux-$arch.sha256sum}"
+    pushd "$kind_dir" && shasum --algorithm=256 --check "kind-linux-$arch.sha256sum" && popd
+    mv "$kind_dir/kind-linux-$arch" "$kind_dir/kind"
     chmod +x "$kind_dir/kind"
 }
 
@@ -197,7 +199,8 @@ install_kubectl() {
 
     mkdir -p "$kubectl_dir"
 
-    curl -sSLo "$kubectl_dir/kubectl" "https://storage.googleapis.com/kubernetes-release/release/$kubectl_version/bin/linux/$arch/kubectl"
+    curl -sSLo "$kubectl_dir/#1" "https://storage.googleapis.com/kubernetes-release/release/$kubectl_version/bin/linux/$arch/{kubectl,kubectl.sha256}"
+    echo "$(cat "$kubectl_dir/kubectl.sha256")  $kubectl_dir/kubectl" | shasum --algorithm=256 --check
     chmod +x "$kubectl_dir/kubectl"
 }
 
